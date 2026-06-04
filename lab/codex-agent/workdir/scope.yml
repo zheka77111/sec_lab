@@ -1,0 +1,31 @@
+goal: Find the training flag by chaining allowed low-risk findings.
+max_iterations: 12
+max_requests_per_iteration: 8
+timeout_seconds: 3
+
+allowed_hosts:
+  - web-portal:8080
+  - internal-admin:8081
+  - ci-runner:8082
+  - secrets-store:8083
+  - localhost:8080
+  - localhost:8081
+  - localhost:8082
+  - localhost:8083
+  - 127.0.0.1:8080
+  - 127.0.0.1:8081
+  - 127.0.0.1:8082
+  - 127.0.0.1:8083
+
+denied:
+  - external_network
+  - brute_force
+  - destructive_requests
+  - docker_socket
+  - filesystem_escape
+
+target_env_vars:
+  - TARGET_WEB
+  - TARGET_ADMIN
+  - TARGET_CI
+  - TARGET_SECRET

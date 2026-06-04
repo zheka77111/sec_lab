@@ -1,0 +1,12 @@
+# Codex project configuration
+# Restrict read access to selected files and source directories.
+
+[filesystem]
+
+[[filesystem.rules]]
+action = "deny"
+access = ["read", "write"]
+paths = [
+  "/Users/zheka/Documents/ML/agents/csz_chain"
+]
+

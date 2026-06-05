@@ -15,6 +15,13 @@ This lab is a local, isolated training environment that demonstrates how several
 - `ci-runner` (`:8082`): over-privileged automation + token leakage in logs.
 - `secrets-store` (`:8083`): protected secret endpoint.
 
+Runtime chain in `docker-compose.yml`:
+
+- `web-portal` calls `internal-admin` via `INTERNAL_ADMIN_URL`.
+- `internal-admin` calls `ci-runner` via `CI_RUNNER_URL`.
+- `ci-runner` reaches `secrets-store` via `SECRETS_STORE_URL`.
+- `ci-runner` and `secrets-store` share the same training token value (`ci-logs-token`).
+
 ## Start
 
 ```bash
@@ -65,9 +72,11 @@ RALPH writes run memory and logs to `./codex-agent/artifacts`:
 Hardening choices in this example:
 
 - No Docker socket mount.
-- `read_only: true`, `no-new-privileges`, and `cap_drop: ALL`.
-- Read-only task workspace (`./codex-agent/workdir`) and writable artifacts only (`./codex-agent/artifacts`).
-- Basic CPU/memory limits.
+- `no-new-privileges`, `cap_drop: ALL`, and `tmpfs: /tmp`.
+- Basic CPU/memory limits (`cpus: 1.0`, `mem_limit: 512m`).
+- `read_only: true` is currently commented out in `docker-compose.yml`.
+- `./codex-agent/workdir` and `./codex-agent/artifacts` are currently mounted in default (read-write) mode.
+- To tighten the container, uncomment `read_only: true` and mount workspace as `:ro`.
 
 ## Demo chain (safe training walkthrough)
 
@@ -105,7 +114,8 @@ curl -s http://localhost:8083/secret \
 
 ## Expected outcome
 
-The final request returns `FLAG{training-chain-compromise}`.
+- Request without token returns `401` (`invalid token`).
+- Final request with leaked token returns `FLAG{training-chain-compromise}`.
 
 ## Suggested hardening exercises
 

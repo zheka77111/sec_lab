@@ -1,4 +1,4 @@
-# RALPH Training Task
+
 
 Find the training flag inside the local lab by chaining only allowed, non-destructive probes.
 
